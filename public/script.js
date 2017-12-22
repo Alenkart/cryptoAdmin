@@ -60,20 +60,7 @@ function initChart(rawData) {
 	       	labels: labels,
 	        datasets: datasets
 	    },
-	    options: {
-	        scales: {
-	        	xAxes: [{
-	                ticks: {
-	                    beginAtZero:true
-	                }
-	            }],
-	            yAxes: [{
-	                ticks: {
-	                    beginAtZero:true
-	                }
-	            }]
-	        }
-	    }
+	    
 	});
 
 }

@@ -1,46 +1,10 @@
 const express = require('express');
 const app = express();
 const request = require('request');
-const Job = require('./core/job');
+const cexio = require('./core/cexio');
+const port = 3000;
 
 let storage = {};
-
-const WebSocket = require('ws');
-
-const ws = new WebSocket('wss://ws.cex.io/ws/');
-
-ws.on('open', function open() {
-
-  ws.send('{ "e": "subscribe", "rooms": [ "tickers" ] }');
-});
-
-ws.on('message', function incoming(data) {
-  
-  jsonData = JSON.parse(data);
-
-  if(!jsonData.data) {
-  	return;
-  }
-
-  const { symbol1, symbol2, price } = jsonData.data;
-
-  if(symbol2 !== 'USD') {
-  	return;
-  }
-
-  if(!storage[symbol1]) {
-  	storage[symbol1] = [];
-  }
-
-  if (storage[symbol1].length > 50) {
-  	storage[symbol1].shift();
-  }
-
-  storage[symbol1].push(price);
-
-  console.log(`${symbol1} to ${symbol2}`, price);
-
-});
 
 app.use(express.static('public'));
 
@@ -75,6 +39,32 @@ app.get('/f', (req, res) => {
 	res.send(`${size} |  ${last} / ${first}  = ${last / first}`);
 });
 
-app.listen(3000, () => console.log('server is running on port 3000'));
+app.listen(port, () => {
+
+	const cex = new cexio();
+
+	cex.messageCb = ({ symbol1, symbol2, price }) => {
+
+		if(symbol2 !== 'USD') {
+			return;
+		}
+
+		if(!storage[symbol1]) {
+			storage[symbol1] = [];
+		}
+
+		if (storage[symbol1].length > 100) {
+			storage[symbol1].shift();
+		}
+
+		storage[symbol1].push(price);
+
+		console.log(`${symbol1} to ${symbol2}`, price);
+	}
+
+	cex.init();
+
+	console.log('server is running on port 3000');
+});
 
 
