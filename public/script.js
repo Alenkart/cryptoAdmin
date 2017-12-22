@@ -1,6 +1,6 @@
-const currency = 'XRP';
+// const currency = 'XRP';
 
-fetch(`/data?coin=${currency}`).then(res => {
+fetch(`/data`).then(res => {
 	return res.json();
 }).then(initChart).catch(err => {
 	console.log(err);
@@ -48,7 +48,7 @@ function initChart(rawData) {
 
 	const datasets = getDatasets(keys, rawData);
 
-	const labels = [...Array(rawData[currency].length).keys()];
+	const labels = [...Array(100).keys()];
 
 	console.log(labels);
 
@@ -59,8 +59,23 @@ function initChart(rawData) {
 	    data: {
 	       	labels: labels,
 	        datasets: datasets
+
 	    },
-	    
+        options: {
+            responsive: true,
+            title:{
+                display:true,
+                text:'Chart.js Line Chart'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+        }  
 	});
 
 }

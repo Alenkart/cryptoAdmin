@@ -43,9 +43,17 @@ app.listen(port, () => {
 
 	const cex = new cexio();
 
-	cex.messageCb = ({ symbol1, symbol2, price }) => {
+	cex.messageCb = (res) => {
+
+		if(!res.data) {
+			console.log(res);
+			return;
+		}
+
+		const { symbol1, symbol2, price } = res.data;
 
 		if(symbol2 !== 'USD') {
+			console.log(res.data);
 			return;
 		}
 
@@ -62,7 +70,19 @@ app.listen(port, () => {
 		console.log(`${symbol1} to ${symbol2}`, price);
 	}
 
+
+
+	// cex.send({"e": "init-ohlcv-new", "i": "1m", "rooms": ["pair-BTC-USD"]});
+
+	// cex.send({ "e": "subscribe", "rooms": [ "tickers" ] });
+
+cex.send({
+    "e": "subscribe",
+    "rooms": ["pair-BTC-USD"]
+});
+
 	cex.init();
+
 
 	console.log('server is running on port 3000');
 });
